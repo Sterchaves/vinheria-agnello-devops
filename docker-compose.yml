@@ -1,0 +1,28 @@
+
+services:
+
+  produtos-service:
+    build: ./produtos-service
+    image: vinheria-produtos:1.0
+    container_name: vinheria-produtos
+    ports:
+      - "8080:8080"
+    networks:
+      - vinheria-network
+
+  carrinho-service:
+    build: ./carrinho-service
+    image: vinheria-carrinho:1.0
+    container_name: vinheria-carrinho
+    ports:
+      - "8081:8080"
+    environment:
+      PRODUTOS_URL: http://produtos-service:8080
+    depends_on:
+      - produtos-service
+    networks:
+      - vinheria-network
+
+networks:
+  vinheria-network:
+    driver: bridge

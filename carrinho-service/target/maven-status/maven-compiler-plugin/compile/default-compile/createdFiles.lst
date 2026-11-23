@@ -1,0 +1,5 @@
+com/vinheria/carrinho/service/CarrinhoService.class
+com/vinheria/carrinho/controller/CarrinhoServlet$AdicionarItemDTO.class
+com/vinheria/carrinho/model/ItemCarrinho.class
+com/vinheria/carrinho/controller/CarrinhoServlet.class
+com/vinheria/carrinho/service/CarrinhoService$ProdutoDTO.class
