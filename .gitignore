@@ -1,0 +1,39 @@
+# Maven - arquivos gerados pelo build
+**/target/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Arquivos temporários
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+.history/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# Variáveis de ambiente e credenciais
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Arquivos temporários de sistema
+*.bak
+*~
