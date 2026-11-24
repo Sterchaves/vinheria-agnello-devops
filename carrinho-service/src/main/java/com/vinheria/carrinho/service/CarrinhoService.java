@@ -25,6 +25,10 @@ public class CarrinhoService {
                 "http://localhost:8080"
             );
 
+    private final String produtosApiKey = System.getenv(
+        "PRODUTOS_API_KEY"
+    );
+
     public synchronized List<ItemCarrinho> listar() {
         return new ArrayList<>(itens);
     }
@@ -38,12 +42,16 @@ public class CarrinhoService {
             );
         }
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(
-                    produtosUrl + "/produtos/" + vinhoId
-                ))
-                .GET()
-                .build();
+       
+if (produtosApiKey == null || produtosApiKey.isBlank()) {
+    throw new IOException("API Key de Produtos não configurada");
+}
+
+HttpRequest request = HttpRequest.newBuilder()
+    .uri(URI.create(produtosUrl + "/produtos/" + vinhoId))
+    .header("X-API-Key", produtosApiKey)
+    .GET()
+    .build();
 
         HttpResponse<String> response = httpClient.send(
                 request,

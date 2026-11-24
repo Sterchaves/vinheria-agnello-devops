@@ -11,6 +11,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+
 @WebServlet("/produtos/*")
 public class ProdutoServlet extends HttpServlet {
 
@@ -24,6 +27,32 @@ public class ProdutoServlet extends HttpServlet {
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+
+
+String chaveEsperada = System.getenv("PRODUTOS_API_KEY");
+String chaveRecebida = request.getHeader("X-API-Key");
+
+if (chaveEsperada == null || chaveEsperada.isBlank()) {
+    response.setStatus(503);
+    response.getWriter().write(
+        "{\"erro\":\"Autenticação não configurada\"}"
+    );
+    return;
+}
+
+boolean chaveValida = chaveRecebida != null
+    && MessageDigest.isEqual(
+        chaveEsperada.getBytes(StandardCharsets.UTF_8),
+        chaveRecebida.getBytes(StandardCharsets.UTF_8)
+    );
+
+if (!chaveValida) {
+    response.setStatus(401);
+    response.getWriter().write(
+        "{\"erro\":\"Não autorizado\"}"
+    );
+    return;
+}
 
         String path = request.getPathInfo();
 

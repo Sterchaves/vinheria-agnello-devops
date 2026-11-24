@@ -34,6 +34,19 @@ Thumbs.db
 *.key
 *.pem
 
+
+# Certificados e keystores TLS
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.csr
+
+# Chaves privadas e certificados locais
+security/certs/*
+!security/certs/.gitkeep
+
+
 # Arquivos temporários de sistema
 *.bak
 *~
