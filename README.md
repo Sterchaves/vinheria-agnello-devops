@@ -2,7 +2,7 @@
 
 Simulação acadêmica de uma arquitetura com **dois microsserviços Java**, executados em **contêineres Docker** e integrados por **API REST na rede interna Docker**. Projeto desenvolvido como continuidade da Vinheria Agnello, para a atividade de Infraestrutura, DevOps e Comunicação Segura da FIAP.
 
-> **Estado atual (23/11/2026):** APIs de Produtos e Carrinho implementadas; build Maven, imagens Docker, execução com Docker Compose, resolução de nomes por DNS interno e integração REST testados. **Autenticação, HTTPS/TLS, pipeline Jenkins e demonstração com Wireshark ainda não estão implementados neste repositório**, conforme o progresso informado pela equipe. Os arquivos `Jenkinsfile` e `Dockerfile` já aparecem na estrutura, mas a existência de um arquivo não confirma a execução de seu conteúdo.
+> **Estado atual (24/11/2026):** APIs de Produtos e Carrinho implementadas e testadas (Maven, Docker Compose, DNS interno e comunicação REST). A equipe desenvolveu um `Jenkinsfile` para **agente Windows**, com build Maven e publicação simulada dos WARs; **a execução bem-sucedida no Jenkins ainda depende de validação e evidências**. **Autenticação, HTTPS/TLS, análise de tráfego com Wireshark e documentação final em PDF ainda estão pendentes.**
 
 ## 1. Arquitetura da simulação
 
@@ -46,7 +46,7 @@ Esta entrega **não transforma toda a aplicação web anterior em microsserviço
 - **Apache Tomcat 10.1** como servidor dentro dos contêineres
 - **Docker + Docker Compose** para execução e rede dos serviços
 - **Git/GitHub** para versionamento
-- **Jenkins** previsto para a etapa de pipeline de build e deploy
+- **Jenkins** para pipeline de build e publicação simulada em agente Windows (arquivo preparado; execução ainda não comprovada)
 
 Os serviços usam dados **em memória** nesta simulação; não é necessário instalar MySQL ou Oracle.
 
@@ -69,7 +69,7 @@ vinheria-agnello-devops/
 │   ├── pom.xml
 │   └── Dockerfile
 ├── docker-compose.yml
-├── Jenkinsfile
+├── Jenkinsfile                      # pipeline para agente Windows
 ├── docs/
 │   └── evidencias/               # se criada pela equipe
 └── README.md
@@ -356,68 +356,9 @@ docker network ls
 docker inspect vinheria-carrinho
 ```
 
-## 10. Limitações atuais e tarefas pendentes
+## 10. Pipeline CI/CD com Jenkins
 
-### Já demonstrado
-
-- [x] Dois serviços Java independentes, cada um empacotado em WAR.
-- [x] Contêineres separados para Produtos e Carrinho.
-- [x] Execução conjunta via Docker Compose.
-- [x] Comunicação REST entre Carrinho e Produtos.
-- [x] Resolução de nomes por DNS interno Docker.
-- [x] Testes de inclusão no carrinho e cálculo de valores.
-
-### Próximas atividades da equipe
-
-- [ ] Implementar **autenticação** entre serviços e demonstrar requisições aceitas/recusadas.
-- [ ] Demonstrar **criptografia HTTPS/TLS** ou uma simulação controlada que contraste tráfego HTTP e protegido; **token não criptografa transporte**.
-- [ ] Construir e executar o **pipeline Jenkins** com build e deploy simulados ou reais, conforme enunciado.
-- [ ] Registrar **prints e logs** das configurações, testes, pipeline e evidências de segurança.
-- [ ] Explicar o requisito de **DHCP/DNS**, explicitando o que foi simulado pela rede Docker e o que não foi.
-- [ ] Preparar o **PDF final** com infraestrutura, fluxo de deploy, práticas de segurança e reflexão da equipe.
-
-### Simplificações deliberadas
-
-- O catálogo e o carrinho utilizam **memória local**, sem banco de dados.
-- O carrinho é **único e compartilhado na instância** para fins didáticos; não há segregação por usuário.
-- Reiniciar ou recriar o contêiner pode apagar itens do carrinho.
-- Os serviços estão acessíveis por **HTTP**, sem TLS ou validação de token na versão atual.
-- O pipeline Jenkins ainda não foi validado; a presença do `Jenkinsfile` não comprova execução.
-- As APIs foram desenhadas para **simulação acadêmica**, não para uso comercial ou exposição pública.
-
-## 11. Orientações para colaboração
-
-1. Fazer `git pull` antes de iniciar alterações.
-2. Criar uma branch para cada atividade, quando possível, por exemplo `feature/seguranca` ou `feature/jenkins`.
-3. **Não versionar** `target/`, credenciais, tokens reais ou arquivos de ambiente contendo segredos.
-4. Ao mudar código Java, executar os builds Maven antes de recriar os contêineres.
-5. Atualizar este README quando novos endpoints, variáveis de ambiente, controles de segurança ou passos de Jenkins forem implementados.
-6. Incluir as evidências relevantes em `docs/evidencias/` e revisar em equipe antes da entrega.
-
-## 12. Solução de problemas
-
-| Problema | Verificação / solução |
-| --- | --- |
-| `mvn: command not found` | Instalar Maven e verificar `mvn -version` |
-| Erro de versão do Java | Usar JDK 21 e conferir `java -version` e `mvn -version` |
-| Docker não conecta ao daemon | Iniciar Docker Desktop/Engine; testar `docker info` |
-| Erro `COPY target/*.war` no build Docker | Executar `mvn clean package` dentro de **cada** serviço |
-| Porta 8080/8081 ocupada | Parar outro processo/contêiner ou alterar o mapeamento de porta |
-| Nome do contêiner já está em uso | Remover apenas o contêiner antigo em conflito; não apagar dados de outros projetos |
-| Carrinho retorna `503` ao adicionar | Verificar `docker compose ps`, logs do serviço Produtos e variável `PRODUTOS_URL` |
-| `getent` não resolve `produtos-service` | Verificar se ambos os contêineres participam da mesma rede Compose |
-| Alteração Java não aparece | Recompilar Maven e executar `docker compose up -d --build` |
-| Erros no VS Code, mas `BUILD SUCCESS` | Recarregar a janela ou reimportar os projetos Java/Maven |
-
----
-
-**Vinheria Agnello | FIAP | Projeto acadêmico de infraestrutura e DevOps.**
-
-
-
-# Pipeline CI/CD com Jenkins
-
-O projeto utiliza Jenkins para automatizar o processo de build e publicação simulada dos microsserviços da Vinheria Agnello.
+O `Jenkinsfile` foi desenvolvido para automatizar o build e a publicação simulada dos microsserviços da Vinheria Agnello. **A execução no Jenkins ainda precisa ser validada pela equipe.**
 
 A pipeline obtém o código-fonte do GitHub, compila os dois microsserviços utilizando Maven e copia os arquivos WAR gerados para uma pasta de publicação.
 
@@ -425,7 +366,7 @@ A pipeline obtém o código-fonte do GitHub, compila os dois microsserviços uti
 
 GitHub → Jenkins → Maven Build → Arquivos WAR → Publicação simulada
 
-## Pré-requisitos
+### 10.1. Pré-requisitos
 
 A pipeline foi desenvolvida para execução em um **agente Windows**, com as seguintes ferramentas:
 
@@ -436,7 +377,7 @@ A pipeline foi desenvolvida para execução em um **agente Windows**, com as seg
 
 O Maven e o Git devem estar acessíveis ao usuário responsável pela execução do agente Jenkins.
 
-## Configuração do Jenkins
+### 10.2. Configuração do Jenkins
 
 No Jenkins, acesse **Manage Jenkins > Tools**.
 
@@ -449,7 +390,7 @@ Os nomes devem corresponder aos definidos no `Jenkinsfile`.
 
 O agente Windows deve estar conectado e online, utilizando o rótulo configurado no pipeline.
 
-## Criar o job Pipeline
+### 10.3. Criar o job Pipeline
 
 1. No Jenkins, clique em **New Item**.
 2. Informe o nome `vinheria-agnello-devops` e selecione **Pipeline**.
@@ -466,7 +407,7 @@ O agente Windows deve estar conectado e online, utilizando o rótulo configurado
 6. Clique em **Save**.
 7. Selecione **Build Now** para executar a pipeline.
 
-## Etapas da pipeline
+### 10.4. Etapas previstas da pipeline
 
 **1. Obtenção do código-fonte**
 
@@ -489,7 +430,7 @@ O Jenkins organiza os arquivos WAR em uma pasta de publicação no ambiente Wind
 
 Os artefatos gerados são copiados para a pasta de publicação, simulando a disponibilização das aplicações em um ambiente de produção.
 
-## Validação
+### 10.5. Como validar a execução
 
 Para verificar a execução:
 
@@ -499,7 +440,7 @@ Para verificar a execução:
 4. Verifique a geração e a cópia dos arquivos WAR para a pasta de publicação.
 5. Confirme que a pipeline foi concluída com o status `SUCCESS`.
 
-## Observações
+### 10.6. Observações e limitações
 
 A pipeline utiliza comandos `bat` e `powershell`, sendo destinada à execução em um agente Windows.
 
@@ -508,3 +449,63 @@ O processo automatiza a compilação e a publicação simulada dos artefatos, ma
 A execução dos microsserviços com Docker Compose é documentada separadamente neste README.
 
 A publicação simulada foi adotada para atender aos objetivos acadêmicos da atividade de DevOps da FIAP.
+
+**Status desta etapa:** `Jenkinsfile` preparado para Windows; build real, cópia dos artefatos e status `SUCCESS` **ainda não verificados** neste README. A equipe deve acrescentar os prints do Console Output, do histórico do job e da pasta de publicação após a execução.
+
+## 11. Limitações atuais e tarefas pendentes
+
+### Já demonstrado
+
+- [x] Dois serviços Java independentes, cada um empacotado em WAR.
+- [x] Contêineres separados para Produtos e Carrinho.
+- [x] Execução conjunta via Docker Compose.
+- [x] Comunicação REST entre Carrinho e Produtos.
+- [x] Resolução de nomes por DNS interno Docker.
+- [x] Testes de inclusão no carrinho e cálculo de valores.
+
+### Próximas atividades da equipe
+
+- [ ] Implementar **autenticação** entre serviços e demonstrar requisições aceitas/recusadas.
+- [ ] Demonstrar **criptografia HTTPS/TLS** ou uma simulação controlada que contraste tráfego HTTP e protegido; **token não criptografa transporte**.
+- [x] Preparar o **Jenkinsfile** para build Maven e publicação simulada em agente Windows.
+- [ ] **Executar e validar o Jenkinsfile** em agente Windows; registrar status `SUCCESS`, logs e arquivos WAR publicados.
+- [ ] Registrar **prints e logs** das configurações, testes, pipeline e evidências de segurança.
+- [ ] Explicar o requisito de **DHCP/DNS**, explicitando o que foi simulado pela rede Docker e o que não foi.
+- [ ] Preparar o **PDF final** com infraestrutura, fluxo de deploy, práticas de segurança e reflexão da equipe.
+
+### Simplificações deliberadas
+
+- O catálogo e o carrinho utilizam **memória local**, sem banco de dados.
+- O carrinho é **único e compartilhado na instância** para fins didáticos; não há segregação por usuário.
+- Reiniciar ou recriar o contêiner pode apagar itens do carrinho.
+- Os serviços estão acessíveis por **HTTP**, sem TLS ou validação de token na versão atual.
+- O `Jenkinsfile` é específico para agente Windows (`bat` e `powershell`); não foi validado neste README e não realiza deploy automático nos contêineres.
+- As APIs foram desenhadas para **simulação acadêmica**, não para uso comercial ou exposição pública.
+
+## 12. Orientações para colaboração
+
+1. Fazer `git pull` antes de iniciar alterações.
+2. Criar uma branch para cada atividade, quando possível, por exemplo `feature/seguranca` ou `feature/jenkins`.
+3. **Não versionar** `target/`, credenciais, tokens reais ou arquivos de ambiente contendo segredos.
+4. Ao mudar código Java, executar os builds Maven antes de recriar os contêineres.
+5. Atualizar este README quando novos endpoints, variáveis de ambiente, controles de segurança ou passos de Jenkins forem implementados.
+6. Incluir as evidências relevantes em `docs/evidencias/` e revisar em equipe antes da entrega.
+
+## 13. Solução de problemas
+
+| Problema | Verificação / solução |
+| --- | --- |
+| `mvn: command not found` | Instalar Maven e verificar `mvn -version` |
+| Erro de versão do Java | Usar JDK 21 e conferir `java -version` e `mvn -version` |
+| Docker não conecta ao daemon | Iniciar Docker Desktop/Engine; testar `docker info` |
+| Erro `COPY target/*.war` no build Docker | Executar `mvn clean package` dentro de **cada** serviço |
+| Porta 8080/8081 ocupada | Parar outro processo/contêiner ou alterar o mapeamento de porta |
+| Nome do contêiner já está em uso | Remover apenas o contêiner antigo em conflito; não apagar dados de outros projetos |
+| Carrinho retorna `503` ao adicionar | Verificar `docker compose ps`, logs do serviço Produtos e variável `PRODUTOS_URL` |
+| `getent` não resolve `produtos-service` | Verificar se ambos os contêineres participam da mesma rede Compose |
+| Alteração Java não aparece | Recompilar Maven e executar `docker compose up -d --build` |
+| Erros no VS Code, mas `BUILD SUCCESS` | Recarregar a janela ou reimportar os projetos Java/Maven |
+
+---
+
+**Vinheria Agnello | FIAP | Projeto acadêmico de infraestrutura e DevOps.**
