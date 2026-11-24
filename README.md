@@ -394,19 +394,6 @@ docker inspect vinheria-carrinho
 5. Atualizar este README quando novos endpoints, variáveis de ambiente, controles de segurança ou passos de Jenkins forem implementados.
 6. Incluir as evidências relevantes em `docs/evidencias/` e revisar em equipe antes da entrega.
 
-**Sugestão de `.gitignore`:**
-
-```gitignore
-**/target/
-.DS_Store
-.vscode/
-.idea/
-*.log
-.env
-.env.*
-!.env.example
-```
-
 ## 12. Solução de problemas
 
 | Problema | Verificação / solução |
@@ -425,3 +412,99 @@ docker inspect vinheria-carrinho
 ---
 
 **Vinheria Agnello | FIAP | Projeto acadêmico de infraestrutura e DevOps.**
+
+
+
+# Pipeline CI/CD com Jenkins
+
+O projeto utiliza Jenkins para automatizar o processo de build e publicação simulada dos microsserviços da Vinheria Agnello.
+
+A pipeline obtém o código-fonte do GitHub, compila os dois microsserviços utilizando Maven e copia os arquivos WAR gerados para uma pasta de publicação.
+
+**Fluxo da pipeline:**
+
+GitHub → Jenkins → Maven Build → Arquivos WAR → Publicação simulada
+
+## Pré-requisitos
+
+A pipeline foi desenvolvida para execução em um **agente Windows**, com as seguintes ferramentas:
+
+- Java JDK 21;
+- Apache Maven 3.9.x;
+- Git;
+- Jenkins com os plugins Pipeline e Git.
+
+O Maven e o Git devem estar acessíveis ao usuário responsável pela execução do agente Jenkins.
+
+## Configuração do Jenkins
+
+No Jenkins, acesse **Manage Jenkins > Tools**.
+
+Cadastre as seguintes ferramentas:
+
+- **JDK:** `JDK 21`
+- **Maven:** `Maven 3.9`
+
+Os nomes devem corresponder aos definidos no `Jenkinsfile`.
+
+O agente Windows deve estar conectado e online, utilizando o rótulo configurado no pipeline.
+
+## Criar o job Pipeline
+
+1. No Jenkins, clique em **New Item**.
+2. Informe o nome `vinheria-agnello-devops` e selecione **Pipeline**.
+3. Na seção **Pipeline**, selecione **Pipeline script from SCM**.
+4. Em **SCM**, selecione **Git**.
+5. Preencha os campos:
+
+| Campo | Valor |
+|---|---|
+| Repository URL | `https://github.com/Sterchaves/vinheria-agnello-devops.git` |
+| Branches to build | `*/main` |
+| Script Path | `Jenkinsfile` |
+
+6. Clique em **Save**.
+7. Selecione **Build Now** para executar a pipeline.
+
+## Etapas da pipeline
+
+**1. Obtenção do código-fonte**
+
+O Jenkins obtém o código do repositório GitHub configurado.
+
+**2. Build dos microsserviços**
+
+O Maven compila e empacota os dois microsserviços:
+
+- `produtos-service`
+- `carrinho-service`
+
+Os arquivos WAR são gerados nas respectivas pastas `target/`.
+
+**3. Preparação da publicação**
+
+O Jenkins organiza os arquivos WAR em uma pasta de publicação no ambiente Windows.
+
+**4. Deploy simulado**
+
+Os artefatos gerados são copiados para a pasta de publicação, simulando a disponibilização das aplicações em um ambiente de produção.
+
+## Validação
+
+Para verificar a execução:
+
+1. Acesse o histórico de builds do job.
+2. Abra **Console Output** para consultar os logs.
+3. Confirme que os dois microsserviços foram compilados com sucesso.
+4. Verifique a geração e a cópia dos arquivos WAR para a pasta de publicação.
+5. Confirme que a pipeline foi concluída com o status `SUCCESS`.
+
+## Observações
+
+A pipeline utiliza comandos `bat` e `powershell`, sendo destinada à execução em um agente Windows.
+
+O processo automatiza a compilação e a publicação simulada dos artefatos, mas não realiza o deploy automático nos contêineres Docker.
+
+A execução dos microsserviços com Docker Compose é documentada separadamente neste README.
+
+A publicação simulada foi adotada para atender aos objetivos acadêmicos da atividade de DevOps da FIAP.
