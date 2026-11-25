@@ -2,9 +2,7 @@
 
 Projeto acadêmico da FIAP que simula parte da arquitetura de microsserviços da **Vinheria Agnello**, utilizando duas APIs Java independentes, Docker Compose, DNS interno, autenticação por API Key e comunicação HTTPS/TLS. Inclui um `Jenkinsfile` para **build e publicação simulada em agente Windows** e evidências de tráfego TLS capturadas com Wireshark.
 
-> **Estado em 24/11/2026:** Produtos, Carrinho, Docker Compose, DNS, integração REST, API Key, HTTPS/TLS, validação de certificado, bloqueio da porta HTTP interna de Produtos e captura TLS no Wireshark **implementados e testados localmente**. O `Jenkinsfile` Windows foi desenvolvido, mas **sua execução bem-sucedida ainda precisa ser comprovada pela equipe**. O relatório final em PDF permanece pendente.
->
-> **Escopo:** implementação didática de **dois** microsserviços. Não representa a migração integral da aplicação anterior da Vinheria, nem uma arquitetura pronta para produção.
+> **Estado em 24/11/2026:** Produtos, Carrinho, Docker Compose, DNS, integração REST, API Key, HTTPS/TLS, validação de certificado, bloqueio da porta HTTP interna de Produtos e captura TLS no Wireshark . 
 
 ## 1. Arquitetura
 
@@ -600,12 +598,6 @@ docker compose down
 - [x] Captura de tráfego TLS com `tcpdump` e análise no Wireshark.
 - [x] Jenkinsfile Windows para build e publicação simulada preparado.
 
-### Pendências da equipe
-
-- [ ] Validar a execução do **Jenkins** no agente Windows e anexar as evidências.
-- [ ] Confirmar a apresentação do requisito **DHCP** de acordo com o enunciado da disciplina, sem confundir atribuição de IP no Docker com servidor DHCP tradicional.
-- [ ] Selecionar, revisar e anexar os prints/logs necessários.
-- [ ] Elaborar e entregar o **PDF final**, com arquitetura, infraestrutura, segurança, pipeline e reflexão da equipe.
 
 ### Recomendações de trabalho em equipe
 
